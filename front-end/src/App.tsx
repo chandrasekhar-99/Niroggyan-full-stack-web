@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import DoctorsList from './components/DoctorsList/DoctorsList';
 import Profile from './components/Profile/Profile';
+import AppointmentPage from './components/AppointmentPage/AppointmentPage';
 import './App.css';
 
 
@@ -11,6 +12,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<DoctorsList/>} />
         <Route path="/doctor/:id" element={<Profile />} />
+        <Route path="/appointment/:id" element={<AppointmentPage />} />
       </Routes>
     </Router>
   );

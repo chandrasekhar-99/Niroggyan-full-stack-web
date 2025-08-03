@@ -83,6 +83,24 @@
   font-style: italic;
 }
 
+.bookButton {
+  background-color: #2ecc71;
+  color: white;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.bookButton:hover {
+  background-color: #27ae60;
+}
+
+
 /* Responsive - Mobile */
 @media screen and (max-width: 600px) {
   .container {

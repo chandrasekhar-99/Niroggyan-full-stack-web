@@ -67,6 +67,12 @@ const Profile: React.FC = () => {
           )}
         </div>
       </div>
+      <button
+        className={styles.bookButton}
+        onClick={() => navigate(`/appointment/${id}`)}
+      >
+        Book Appointment
+      </button>
     </div>
   );
 };
