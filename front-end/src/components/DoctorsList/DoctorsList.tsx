@@ -1,47 +1,152 @@
-import { useEffect, useState } from "react";
-import React from "react";
-import { Doctor } from "../../types/index"
+import React from 'react';
+import { useEffect, useState } from 'react';  
+import { useNavigate } from 'react-router-dom';
+import styles from './DoctorsList.module.css';
+
+interface Doctor {
+  id: string;
+  name: string;
+  specialization: string;
+  profileImg: string;
+  available: boolean;
+  availableSlots: string[];
+  description: string;
+}
 
 const DoctorsList: React.FC = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+   const navigate = useNavigate();
 
   useEffect(() => {
-      const fetchDoctors = async () => {
-        try {
-          const response = await fetch("http://localhost:5000/api/doctors");
-          const data : Doctor[] = await response.json();
-          setDoctors(data);
-        } catch (error) {
-          setError("Failed to fetch doctors");
-        } finally {
-          setLoading(false);
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_API_URL}/api/doctors`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-      };
-      fetchDoctors();
+        const data: Doctor[] = await response.json();
+        console.log('Fetched doctors:', data);
+        setDoctors(data);
+      } catch (err: any) {
+        setError(err.message || 'Something went wrong');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
   }, []);
 
-  if (loading) {
-    return <div>Loading Doctors...</div>;
-  }
+  useEffect(() => {
+    const lowercasedTerm = searchTerm.toLowerCase();
+    const filtered = doctors.filter(
+      doctor =>
+        doctor.name.toLowerCase().includes(lowercasedTerm) ||
+        doctor.specialization.toLowerCase().includes(lowercasedTerm)
+    );
+    setFilteredDoctors(filtered);
+  }, [searchTerm, doctors]);
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+  // const getAvailabilityStatus = (doctor: Doctor) => {
+  //   if (!doctor.available) return 'On Leave';
+    
+  //   const today = new Date().toISOString().split('T')[0];
+  //   const hasAvailableToday = doctor.availableSlots.some(slot => 
+  //     slot.startsWith(today)
+  //   );
+    
+  //   return hasAvailableToday ? 'Available Today' : 'Fully Booked';
+  // };
+
+  const getAvailabilityStatus = (doctor: Doctor) => {
+  if (!doctor.available) return 'On Leave';
+
+  const today = new Date();
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth(); // 0-indexed (0 = January)
+
+  const hasUpcomingSlot = doctor.availableSlots.some(slot => {
+    const slotDate = new Date(slot);
+    return (
+      slotDate.getFullYear() >= todayYear &&
+      slotDate.getMonth() >= todayMonth
+    );
+  });
+
+  return hasUpcomingSlot ? 'Available Today' : 'Fully Booked';
+  };
+
+  const getAvailabilityColor = (status: string) => {
+    switch (status) {
+      case 'Available Today': return styles.statusGreen;
+      case 'Fully Booked': return styles.statusYellow;
+      case 'On Leave': return styles.statusRed;
+      default: return styles.statusGray;
+    }
+  };
+
+  const handleDoctorClick = (id: string) => {
+    navigate(`/doctor/${id}`);
+  };
+
+  const totalPages = Math.ceil(filteredDoctors.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedDoctors = filteredDoctors.slice(startIndex, startIndex + itemsPerPage);
+
+  const goToPage = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
+  if (loading) return <p>Loading doctors...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
-    <div>
+    <div className={styles.container}>
       <h2>Doctors List</h2>
-      <ul>
-        {doctors.map((doctor) => (
-          <li key={doctor.id}>
-            <h3>{doctor.name}</h3>
-            <p>Specialization: {doctor.specialization}</p>
-            <p>{doctor.description}</p>
-          </li>
-        ))}
+      <div>
+        <input
+          type="text"
+          placeholder="Search by name or specialization..."
+          className={styles.searchBar}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+      <ul className={styles.list}>
+        {paginatedDoctors.map((doc) => {
+          const status = getAvailabilityStatus(doc);
+          const statusClass = getAvailabilityColor(status);
+
+          return (
+            <li key={doc.id} className={styles.item}  
+            onClick={() => handleDoctorClick(doc.id)}>
+              <img src={doc.profileImg} alt={doc.name} className={styles.profileImg} />
+              <div className={styles.info}>
+                <p className={styles.name}>{doc.name}</p>
+                <p className={styles.specialization}>{doc.specialization}</p>
+                <p className={styles.description}>{doc.description}</p>
+                <p className={`${styles.status} ${statusClass}`}>{status}</p>
+              </div>
+            </li>
+          );
+        })}
       </ul>
+       <div className={styles.pagination}>
+        <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
+          Prev
+        </button>
+        <span>{currentPage} / {totalPages}</span>
+        <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}>
+          Next
+        </button>
+      </div>
     </div>
   );
 };
