@@ -1,13 +1,15 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const doctorRoutes_1 = __importDefault(require("./routes/doctorRoutes"));
-const app = (0, express_1.default)();
+import express from 'express';
+import cors from 'cors';
+import * as dotenv from 'dotenv';
+import doctorRoutes from './routes/doctorRoutes';
+dotenv.config();
+const app = express();
 // Middlewares
-app.use(express_1.default.json());
+app.use(cors());
+app.use(express.json());
+app.get('/', (req, res) => {
+    res.send('Welcome to the Niroggyan API');
+});
 // Routes
-app.use('/api/doctors', doctorRoutes_1.default);
-exports.default = app;
+app.use('/api/doctors', doctorRoutes);
+export default app;
