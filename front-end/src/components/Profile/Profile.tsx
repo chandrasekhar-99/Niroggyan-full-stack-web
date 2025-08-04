@@ -12,6 +12,8 @@ interface Doctor {
   description: string;
 }
 
+const COLORS = ['#3498db', '#e67e22', '#2ecc71', '#9b59b6', '#1abc9c', '#e74c3c', '#f39c12', '#34495e'];
+
 const Profile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -36,6 +38,21 @@ const Profile: React.FC = () => {
     fetchDoctor();
   }, [id]);
 
+  const getInitials = (name: string) => {
+    const nameParts = name.replace(/^Dr\.\s*/i, '').split(' ');
+    const initials = nameParts.map(part => part[0]).join('').toUpperCase();
+    return initials.slice(0, 2);
+  };
+
+  const getColorFromName = (name: string) => {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % COLORS.length;
+  return COLORS[index];
+  };
+
   if (loading) return <p>Loading doctor details...</p>;
   if (error) return <p>Error: {error}</p>;
   if (!doctor) return <p>Doctor not found</p>;
@@ -47,7 +64,9 @@ const Profile: React.FC = () => {
       </button>
 
       <div className={styles.header}>
-        <img src={doctor.profileImg} alt={doctor.name} className={styles.profileImg} />
+        <div className={styles.initialsAvatar} style={{ backgroundColor: getColorFromName(doctor.name) }}>
+          {getInitials(doctor.name)}
+        </div>
         <div className={styles.info}>
           <h2 className={styles.name}>{doctor.name}</h2>
           <p className={styles.specialization}>{doctor.specialization}</p>

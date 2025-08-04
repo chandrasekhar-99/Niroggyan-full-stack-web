@@ -7,7 +7,7 @@ dotenv.config();
 
 const app = express();
 
-// Middlewares
+
 app.use(cors());
 app.use(express.json());
 
@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 });
 
 
-// Routes
+
 app.use('/api/doctors', doctorRoutes);
 
 export default app;

@@ -100,8 +100,64 @@
   background-color: #27ae60;
 }
 
+.initialsAvatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  border: 2px solid rgba(0,0,0,0.1);
+  flex-shrink: 0;
+  margin-right: 10px;
+}
 
-/* Responsive - Mobile */
+.slotsTitle {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.slotsList {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.slotItem {
+  background-color: #dff0d8; 
+  color: #3c763d;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  white-space: nowrap;
+  user-select: none;
+  cursor: default;
+  transition: background-color 0.3s ease;
+}
+
+.slotItem:hover {
+  background-color: #c4e3a1;
+}
+
+.noSlots {
+  font-style: italic;
+  color: #888;
+  font-size: 0.95rem;
+}
+
+
+
+
 @media screen and (max-width: 600px) {
   .container {
     padding: 15px;
@@ -130,5 +186,26 @@
 
   .description {
     font-size: 14px;
+  }
+
+  .initialsAvatar {
+    width: 100px;
+    height: 100px;
+    font-size: 24px;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .slotsList {
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .slotItem {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    white-space: normal; 
+    min-width: 100px;
+    text-align: center;
   }
 }

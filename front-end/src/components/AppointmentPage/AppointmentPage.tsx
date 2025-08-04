@@ -43,7 +43,7 @@ const AppointmentPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Client-side Validation
+  
     if (!patientName.trim()) {
       alert('Please enter Patient Name');
       return;
@@ -57,7 +57,7 @@ const AppointmentPage: React.FC = () => {
       return;
     }
 
-    // In real app, you'd send this data to backend here.
+   
 
     setSubmitted(true);
   };
